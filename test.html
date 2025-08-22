@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>xterm.js scripted demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- xterm.js styles & script (UMD) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css">
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+
+  <style>
+    :root { --bg: #0b0e14; --chrome: #12151c; --text: #e6e6e6; }
+    html, body { height: 100%; margin: 0; background: radial-gradient(80% 80% at 50% 20%, #12151c, #0a0c11 70%); color: var(--text); font-family: ui-sans-serif, system-ui; }
+    .wrap { max-width: 960px; margin: 6rem auto; padding: 0 16px; }
+    .terminal-frame {
+      border-radius: 14px; overflow: hidden; box-shadow: 0 20px 80px rgba(0,0,0,.45), 0 2px 10px rgba(0,0,0,.25);
+      background: var(--chrome); border: 1px solid rgba(255,255,255,0.05);
+    }
+    .titlebar {
+      height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: linear-gradient(#171a22, #12151c);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .lights { display: flex; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 6px; display: inline-block; }
+    .red{background:#ff5f57}.yellow{background:#febc2e}.green{background:#28c840}
+    #term { height: 420px; background: var(--bg); }
+    .controls { display:flex; align-items:center; gap:10px; padding:12px; background:#0e121a; border-top:1px solid rgba(255,255,255,0.06); }
+    .controls button, .controls select {
+      background:#1b2030; color:#d7d7d7; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:8px 12px; cursor:pointer;
+    }
+    .badge { margin-left:auto; opacity:.7; font-size:12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="terminal-frame">
+      <div class="titlebar">
+        <div class="lights">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        </div>
+        <div style="margin-left:8px; font-size:12px; opacity:.75">zsh — 80×24</div>
+      </div>
+      <div id="term"></div>
+      <div class="controls">
+        <button id="play">▶︎ Play</button>
+        <button id="pause">⏸ Pause</button>
+        <button id="replay">↺ Replay</button>
+        <label>Speed
+          <select id="speed">
+            <option value="24">Slow</option>
+            <option value="36" selected>Normal</option>
+            <option value="60">Fast</option>
+            <option value="120">Very fast</option>
+          </select>
+        </label>
+        <span class="badge">Scripted xterm.js demo</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Terminal setup -------------------------------------------------------
+    const term = new Terminal({
+      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+      fontSize: 14,
+      cursorBlink: true,
+      convertEol: true,
+      rows: 20,
+      cols: 84,
+      theme: {
+        background: '#0b0e14',
+        foreground: '#e6e6e6',
+        cursor: '#a0c3ff',
+        black: '#000000', red: '#ff616e', green: '#7bd88f', yellow: '#fec971',
+        blue: '#82aaff', magenta: '#c792ea', cyan: '#89ddff', white: '#d0d0d0'
+      },
+      disableStdin: true // we feed it; users can't type
+    });
+    term.open(document.getElementById('term'));
+
+    // Optional: simple resize-to-fill (without FitAddon)
+    const resizeToContainer = () => {
+      const h = document.getElementById('term').clientHeight;
+      // Keep fixed rows; allow width to fill gracefully via CSS.
+      // (Use xterm FitAddon if you want true dynamic rows/cols.)
+    };
+    addEventListener('resize', resizeToContainer);
+
+    // --- Helpers --------------------------------------------------------------
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    let paused = true;
+    let stopped = false;
+    let cps = 36; // characters per second (adjustable)
+
+    const setPaused = v => paused = v;
+    const waitIfPaused = async () => { while (paused && !stopped) await sleep(50); };
+
+    const write = async (s) => { term.write(s); await Promise.resolve(); };
+    const type = async (s) => {
+      for (const ch of s) {
+        await waitIfPaused(); if (stopped) return;
+        term.write(ch);
+        await sleep(1000 / cps);
+      }
+    };
+    const newline = async () => { await write('\r\n'); };
+    const color = (code, str) => `\x1b[${code}m${str}\x1b[0m`;
+    const prompt = () => `${color('38;5;109', 'conner@mac')} ${color('38;5;75', '~/cursor-demo')}${color('38;5;250', ' % ')} `;
+
+    // --- Script: timed "session" ---------------------------------------------
+    // You can generate this JSON ahead of time from a real run if you want exact timing.
+    const script = [
+      { a: 'print', text: color('38;5;244', '# Cursor CLI — demo playback') },
+      { a: 'print', text: '' },
+
+      { a: 'prompt' },
+      { a: 'type', text: 'cursor --version' },
+      { a: 'enter' },
+      { a: 'print', text: 'cursor 1.2.3' },
+
+      { a: 'prompt' },
+      { a: 'type', text: 'cursor init my-app' },
+      { a: 'enter' },
+      { a: 'print', text: 'Creating my-app...\n✔ Initialized repository\n✔ Installed deps\n✔ Scaffolding complete' },
+
+      { a: 'prompt' },
+      { a: 'type', text: 'cd my-app && cursor run dev' },
+      { a: 'enter' },
+      { a: 'print', text: 'Starting dev server on http://localhost:5173\nReady in 1.2s' },
+
+      { a: 'prompt' },
+      { a: 'type', text: 'open http://localhost:5173' },
+      { a: 'enter' },
+      { a: 'print', text: color('38;5;244', '# (Pretend the browser pops here)') },
+
+      { a: 'print', text: '' },
+      { a: 'print', text: color('38;5;244', '— End of demo —') }
+    ];
+
+    async function runScript() {
+      stopped = false;
+      term.reset();
+      for (const step of script) {
+        await waitIfPaused(); if (stopped) return;
+        if (step.a === 'prompt') {
+          await write('\r\n' + prompt());
+        } else if (step.a === 'type') {
+          await type(step.text);
+        } else if (step.a === 'enter') {
+          await newline();
+        } else if (step.a === 'print') {
+          await write(step.text.replaceAll('\n', '\r\n'));
+          await newline();
+        }
+        // tiny inter-step delay for realism
+        await sleep(150);
+      }
+      paused = true; // auto-pause at end
+    }
+
+    // --- Controls -------------------------------------------------------------
+    const $ = sel => document.querySelector(sel);
+    $('#play').addEventListener('click', () => { if (stopped) { paused = false; stopped = false; runScript(); } else { setPaused(false); }});
+    $('#pause').addEventListener('click', () => setPaused(true));
+    $('#replay').addEventListener('click', () => { stopped = true; paused = false; runScript(); });
+    $('#speed').addEventListener('change', (e) => { cps = Number(e.target.value); });
+
+    // Autostart when visible
+    const io = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && paused && !stopped) {
+        paused = false; runScript();
+      }
+    }, { threshold: 0.4 });
+    io.observe(document.querySelector('.terminal-frame'));
+  </script>
+</body>
+</html>
