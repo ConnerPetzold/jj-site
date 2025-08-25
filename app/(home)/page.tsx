@@ -1,10 +1,9 @@
-"use client";
+import { Metadata } from "next";
 
-import dynamic from "next/dynamic";
-
-const CliDemo = dynamic(() => import("@/components/CliDemo"), {
-  ssr: false,
-});
+export const metadata: Metadata = {
+  title: "Jujutsu",
+  description: "A version control system",
+};
 
 export default function HomePage() {
   return (

@@ -55,7 +55,7 @@ export async function generateMetadata(
   if (!page) notFound();
 
   return {
-    title: page.data.title,
+    title: `${page.data.title} | Jujutsu`,
     description: page.data.description,
   };
 }
