@@ -1,24 +1,11 @@
-import Logo from "@/components/Logo";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
+import Logo from "@/components/Logo";
 
-/**
- * Shared layout configurations
- *
- * you can customise layouts individually from:
- * Home Layout: app/(home)/layout.tsx
- * Docs Layout: app/docs/layout.tsx
- */
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: (
-        <>
-          <Logo className="h-6" />
-          Jujutsu
-        </>
-      ),
+      title: <Logo className="h-8" />,
     },
-    // see https://fumadocs.dev/docs/ui/navigation/links
-    links: [],
+    githubUrl: "https://github.com/jj-vcs/jj",
   };
 }

@@ -5,8 +5,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <HomeLayout
       {...baseOptions()}
-      githubUrl="https://github.com/jj-vcs/jj"
-      links={[{ text: "Documentation", url: "/docs" }]}
+      links={[{ text: "Documentation", url: "/docs/current" }]}
     >
       {children}
     </HomeLayout>

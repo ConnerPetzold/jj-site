@@ -1,3 +1,23 @@
 @import "tailwindcss";
-@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/black.css";
 @import "fumadocs-ui/css/preset.css";
+
+@plugin "tailwindcss-animate";
+
+.shiki:not(.not-fumadocs-codeblock *) {
+  code span {
+    font-weight: var(--shiki-light-font-weight);
+    text-decoration: var(--shiki-light-text-decoration);
+  }
+}
+
+.dark .shiki:not(.not-fumadocs-codeblock *) {
+  code span {
+    font-weight: var(--shiki-dark-font-weight);
+    text-decoration: var(--shiki-dark-text-decoration);
+  }
+}
+
+span.shiki .line {
+  padding: 0 !important;
+}

@@ -21,7 +21,8 @@ export default defineConfig({
   mdxOptions: {
     rehypeCodeOptions: {
       inline: "tailing-curly-colon",
-      theme: "andromeeda",
+      theme: "github-dark-default",
+      fallbackLanguage: "ansi",
     },
   },
 });
