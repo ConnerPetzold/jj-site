@@ -1,4 +1,5 @@
 import { Terminal, IDisposable } from "@xterm/xterm";
+// @ts-ignore
 import { LocalEchoAddon } from "@gytx/xterm-local-echo";
 
 export default class JJAddon {
