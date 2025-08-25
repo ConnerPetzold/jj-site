@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Jujutsu",
+  title: "Jujutsu site demo",
   description: "A version control system",
 };
 
