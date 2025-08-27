@@ -3,12 +3,19 @@ lockfileVersion: 5.4
 specifiers:
   '@gytx/xterm-local-echo': ^0.1.8
   '@orama/orama': ^3.1.11
+  '@radix-ui/react-dialog': ^1.1.15
+  '@radix-ui/react-popover': ^1.1.15
+  '@radix-ui/react-slot': ^1.2.3
   '@tailwindcss/postcss': ^4.1.12
   '@types/mdx': ^2.0.13
   '@types/node': 24.3.0
   '@types/react': ^19.1.11
   '@types/react-dom': ^19.1.8
+  '@types/semver': ^7.7.0
   '@xterm/xterm': ^5.5.0
+  class-variance-authority: ^0.7.1
+  clsx: ^2.1.1
+  cmdk: ^1.1.1
   fumadocs-core: 15.7.2
   fumadocs-mdx: 11.8.0
   fumadocs-ui: 15.7.2
@@ -18,15 +25,24 @@ specifiers:
   react: ^19.1.1
   react-dom: ^19.1.1
   react-xtermjs: ^1.0.10
+  semver: ^7.7.2
   shiki: ^3.12.0
+  tailwind-merge: ^3.3.1
   tailwindcss: ^4.1.12
   tailwindcss-animate: ^1.0.7
+  tw-animate-css: ^1.3.7
   typescript: ^5.9.2
 
 dependencies:
   '@gytx/xterm-local-echo': 0.1.8
   '@orama/orama': 3.1.11
+  '@radix-ui/react-dialog': 1.1.15_bdlezrwncbkvdqbnljgmm7dwwq
+  '@radix-ui/react-popover': 1.1.15_bdlezrwncbkvdqbnljgmm7dwwq
+  '@radix-ui/react-slot': 1.2.3_vphbpbmzgjoh56gahmjqkxeqvi
   '@xterm/xterm': 5.5.0
+  class-variance-authority: 0.7.1
+  clsx: 2.1.1
+  cmdk: 1.1.1_bdlezrwncbkvdqbnljgmm7dwwq
   fumadocs-core: 15.7.2_ygtm4nrns2fvxqdkvhrw5vd75e
   fumadocs-mdx: 11.8.0_iixkbgpspqfn3qhhq5g5yuu3jm
   fumadocs-ui: 15.7.2_ybfkgyfhsymazute2p4vlf66sq
@@ -36,6 +52,7 @@ dependencies:
   react-dom: 19.1.1_react@19.1.1
   react-xtermjs: 1.0.10_@xterm+xterm@5.5.0
   shiki: 3.12.0
+  tailwind-merge: 3.3.1
 
 devDependencies:
   '@tailwindcss/postcss': 4.1.12
@@ -43,9 +60,12 @@ devDependencies:
   '@types/node': 24.3.0
   '@types/react': 19.1.11
   '@types/react-dom': 19.1.8_@types+react@19.1.11
+  '@types/semver': 7.7.0
   postcss: 8.5.6
+  semver: 7.7.2
   tailwindcss: 4.1.12
   tailwindcss-animate: 1.0.7_tailwindcss@4.1.12
+  tw-animate-css: 1.3.7
   typescript: 5.9.2
 
 packages:
@@ -1619,6 +1639,10 @@ packages:
     dependencies:
       csstype: 3.1.3
 
+  /@types/semver/7.7.0:
+    resolution: {integrity: sha512-k107IF4+Xr7UHjwDc7Cfd6PRQfbdkiRabXGRjo07b4WyPahFBZCZ1sE+BNxYIJPPg73UkfOsVOLwqVc/6ETrIA==}
+    dev: true
+
   /@types/unist/2.0.11:
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
     dev: false
@@ -1724,6 +1748,23 @@ packages:
   /clsx/2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
+    dev: false
+
+  /cmdk/1.1.1_bdlezrwncbkvdqbnljgmm7dwwq:
+    resolution: {integrity: sha512-Vsv7kFaXm+ptHDMZ7izaRsP70GgrW9NBNGswt9OZaVBLlE0SNpDq8eu/VGXyF9r7M0azK3Wy7OlYXsuyYLFzHg==}
+    peerDependencies:
+      react: ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^18 || ^19 || ^19.0.0-rc
+    dependencies:
+      '@radix-ui/react-compose-refs': 1.1.2_vphbpbmzgjoh56gahmjqkxeqvi
+      '@radix-ui/react-dialog': 1.1.15_bdlezrwncbkvdqbnljgmm7dwwq
+      '@radix-ui/react-id': 1.1.1_vphbpbmzgjoh56gahmjqkxeqvi
+      '@radix-ui/react-primitive': 2.1.3_bdlezrwncbkvdqbnljgmm7dwwq
+      react: 19.1.1
+      react-dom: 19.1.1_react@19.1.1
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
     dev: false
 
   /collapse-white-space/2.1.0:
@@ -3283,8 +3324,6 @@ packages:
     resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
     engines: {node: '>=10'}
     hasBin: true
-    dev: false
-    optional: true
 
   /sharp/0.34.3:
     resolution: {integrity: sha512-eX2IQ6nFohW4DbvHIOLRB3MHFpYqaqvXd3Tp5e/T/dSH83fxaNJQRvDMhASmkNTsNTVF2/OOopzRCt7xokgPfg==}
@@ -3444,6 +3483,10 @@ packages:
   /tslib/2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
     dev: false
+
+  /tw-animate-css/1.3.7:
+    resolution: {integrity: sha512-lvLb3hTIpB5oGsk8JmLoAjeCHV58nKa2zHYn8yWOoG5JJusH3bhJlF2DLAZ/5NmJ+jyH3ssiAx/2KmbhavJy/A==}
+    dev: true
 
   /typescript/5.9.2:
     resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}

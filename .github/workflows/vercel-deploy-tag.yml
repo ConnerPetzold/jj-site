@@ -1,0 +1,69 @@
+name: Deploy tag to Vercel + update versions.json on main (jq)
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Deploy (Vercel builds in the cloud)
+        id: deploy
+        run: |
+          DEPLOY_URL=$(vercel deploy --prod --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN" --confirm)
+          echo "deployment_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+          echo "Deployed to: $DEPLOY_URL"
+      - name: Switch to default branch
+        run: |
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          git fetch origin "$DEFAULT_BRANCH"
+          git checkout "$DEFAULT_BRANCH"
+          git pull --ff-only origin "$DEFAULT_BRANCH"
+      - name: Upsert tag entry in versions.json (jq)
+        env:
+          TAG: ${{ github.ref_name }}
+          URL: ${{ steps.deploy.outputs.deployment_url }}
+        run: |
+          set -euo pipefail
+          DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # Create a file if missing
+          test -f versions.json || echo '{}' > versions.json
+
+          # Upsert {version, url} into .versions[]
+          # - ensure .versions exists as an array
+          # - remove any prior entry with same version
+          # - append the new entry
+          tmp=$(mktemp)
+          jq --arg version "$TAG" --arg url "$URL" '
+            (.versions //= []) |
+            .versions = (
+              .versions
+              | map(select(.version != $version))
+              + [ { version: $version, url: $url } ]
+            )
+          ' versions.json > "$tmp"
+          mv "$tmp" versions.json
+
+          echo "versions.json updated:"
+          cat versions.json
+
+      - name: Commit & push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add versions.json
+          git commit -m "chore(versions): record ${GITHUB_REF_NAME} -> ${{ steps.deploy.outputs.deployment_url }} [skip ci]" || echo "No changes"
+          git push origin HEAD
