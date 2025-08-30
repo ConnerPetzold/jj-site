@@ -11,13 +11,17 @@ import {
   CommandList,
 } from "./ui/command";
 import { ChevronsUpDownIcon, SearchSlashIcon } from "lucide-react";
-import { currentVersion, sortedVersions } from "@/lib/versions";
+import { currentVersion, remoteVersions, Version } from "@/lib/versions";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export function VersionPicker() {
   const [open, setOpen] = React.useState(false);
+  const [versions, setVersions] = React.useState<Version[]>([]);
+  React.useEffect(() => {
+    remoteVersions.then(setVersions);
+  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -44,7 +48,7 @@ export function VersionPicker() {
               <SearchSlashIcon className="opacity-30" />
             </CommandEmpty>
             <CommandGroup>
-              {[{ version: "Canary", url: "/" }, ...sortedVersions].map(
+              {[{ version: "Canary", url: "/" }, ...versions].map(
                 ({ version, url }) => (
                   <CommandItem
                     key={version}
