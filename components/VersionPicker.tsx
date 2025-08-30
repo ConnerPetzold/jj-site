@@ -11,10 +11,26 @@ import {
   CommandList,
 } from "./ui/command";
 import { ChevronsUpDownIcon, SearchSlashIcon } from "lucide-react";
-import { currentVersion, remoteVersions, Version } from "@/lib/versions";
 import { Button } from "./ui/button";
+import { compare as semverCompare } from "semver";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { URL } from "@/lib/env";
+
+type Version = {
+  version: string;
+  url: string;
+};
+
+const getRemoteVersions = async () => {
+  const response = await fetch(
+    "https://jj-vcs-demo-site.vercel.app/versions.json"
+  );
+  const data = await response.json();
+  return data as Version[];
+};
+
+export const remoteVersions = getRemoteVersions();
 
 export function VersionPicker() {
   const [open, setOpen] = React.useState(false);
@@ -22,6 +38,14 @@ export function VersionPicker() {
   React.useEffect(() => {
     remoteVersions.then(setVersions);
   }, []);
+
+  const sortedVersions = versions.sort((a, b) =>
+    semverCompare(b.version, a.version)
+  );
+
+  const currentVersion = versions.find((version) =>
+    version.url.includes(URL)
+  ) || { version: "Canary", url: "/" };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -31,12 +55,11 @@ export function VersionPicker() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between"
-          onMouseDown={(e) => {
-            e.stopPropagation();
-          }}
+          className="justify-between w-[100px]"
         >
-          {currentVersion.version}
+          <span className={cn(versions.length <= 0 && "invisible")}>
+            {currentVersion.version}
+          </span>
           <ChevronsUpDownIcon size={10} className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -48,7 +71,7 @@ export function VersionPicker() {
               <SearchSlashIcon className="opacity-30" />
             </CommandEmpty>
             <CommandGroup>
-              {[{ version: "Canary", url: "/" }, ...versions].map(
+              {[{ version: "Canary", url: "/" }, ...sortedVersions].map(
                 ({ version, url }) => (
                   <CommandItem
                     key={version}

@@ -1,10 +1,7 @@
 import { createMDX } from "fumadocs-mdx/next";
 import type { NextConfig } from "next";
-import { sortedVersions } from "./lib/versions";
 
 const withMDX = createMDX();
-
-console.log(process.env);
 
 const config: NextConfig = {
   output: "export",
